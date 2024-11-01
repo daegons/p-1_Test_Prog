@@ -97,15 +97,33 @@ namespace p_1_Test_Prog
         // PictureBox를 원형으로 만드는 함수
         private void MakeCircular(PictureBox pictureBox)
         {
+            // 원형으로 만들기 위한 경로 설정
             GraphicsPath gp = new GraphicsPath();
             gp.AddEllipse(0, 0, pictureBox.Width - 1, pictureBox.Height - 1);
             pictureBox.Region = new Region(gp);
+
+            // 테두리와 그림자를 추가하는 Paint 이벤트 핸들러 설정
+            pictureBox.Paint += (sender, e) =>
+            {
+                using (Pen pen = new Pen(Color.DarkGray, 3))
+                {
+                    // 테두리 그리기
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    e.Graphics.DrawEllipse(pen, 1, 1, pictureBox.Width - 3, pictureBox.Height - 3);
+
+                    // 그림자 효과
+                    using (Brush shadowBrush = new SolidBrush(Color.FromArgb(50, 0, 0, 0))) // 그림자 색상 설정
+                    {
+                        e.Graphics.FillEllipse(shadowBrush, 3, 3, pictureBox.Width - 6, pictureBox.Height - 6);
+                    }
+                }
+            };
         }
 
         // Start 버튼 클릭: 각 포트의 데이터 읽기 시작
         private void btnStart_Click(object sender, EventArgs e)
         {
-            StartPortCommunication(serialPort1, comboBox_ComPort1, ref isReading1, Timer_Com1Tx, 250, "Port 1");
+            StartPortCommunication(serialPort1, comboBox_ComPort1, ref isReading1, Timer_Com1Tx, 300, "Port 1");
             StartPortCommunication(serialPort2, comboBox_ComPort2, ref isReading2, Timer_Com2Tx, 500, "Port 2");
 
             if (comboBox_ComPort1.SelectedItem == null && comboBox_ComPort2.SelectedItem == null)
@@ -130,7 +148,7 @@ namespace p_1_Test_Prog
         {
             StopPortCommunication(serialPort1, ref isReading1, Timer_Com1Tx);
             StopPortCommunication(serialPort2, ref isReading2, Timer_Com2Tx);
-            Debug.WriteLine("모든 PCB로부터 데이터 읽기 중지.");
+            Console.WriteLine("모든 PCB로부터 데이터 읽기 중지.");
         }
 
         // 포트 통신 중지 함수: 포트를 닫고 타이머를 중지
@@ -156,19 +174,26 @@ namespace p_1_Test_Prog
             {
                 if (port.IsOpen)
                 {
-                    UpdateStatus(lblTxStatus, true);  // TX 상태 업데이트 (빨간색)
+                    // TX 상태 업데이트 (빨간색)
+                    UpdateTxStatus(lblTxStatus, true);
                     port.WriteLine("#G");  // 데이터 요청 명령어 전송
                     Thread.Sleep(100);  // 송신 후 대기
-                    UpdateStatus(lblTxStatus, false);  // TX 상태 해제 (회색)
+                    UpdateTxStatus(lblTxStatus, false);  // TX 상태 해제 (회색)
 
-                    string response = port.ReadExisting();  // 수신 데이터 읽기
-                    UpdateStatus(lblRxStatus, !string.IsNullOrEmpty(response));  // RX 상태 업데이트
+                    // 수신 데이터 읽기
+                    string response = port.ReadExisting();
 
+                    // RX 상태 업데이트
                     if (!string.IsNullOrEmpty(response))
                     {
+                        UpdateRxStatus(lblRxStatus, true);  // 수신 데이터가 있을 경우 초록색
                         Debug.WriteLine($"{pcbName} mH2O: " + response);
                         Console.WriteLine($"{pcbName} mH2O: " + response);
                         UpdatePressureValue(outputLabel, ParsePressureValue(response));  // 수신 값 표시
+                    }
+                    else
+                    {
+                        UpdateRxStatus(lblRxStatus, false);  // 수신 데이터가 없을 경우 회색
                     }
                 }
             }
@@ -177,13 +202,17 @@ namespace p_1_Test_Prog
                 Debug.WriteLine($"{pcbName} 오류: " + ex.Message);
             }
         }
-
-        // 상태 표시를 업데이트 (활성화 시 초록색, 비활성화 시 회색)
-        private void UpdateStatus(PictureBox statusIndicator, bool isActive)
+        // TX 상태 업데이트 메서드
+        private void UpdateTxStatus(PictureBox lblTxStatus, bool isActive)
         {
-            statusIndicator.BackColor = isActive ? Color.Green : Color.Gray;
+            lblTxStatus.BackColor = isActive ? Color.Red : Color.DarkGray; // 빨간색을 송신 상태로 설정
         }
 
+        // RX 상태 업데이트 메서드
+        private void UpdateRxStatus(PictureBox lblRxStatus, bool isActive)
+        {
+            lblRxStatus.BackColor = isActive ? Color.Green : Color.DarkGray; // 초록색을 수신 상태로 설정
+        }
         // 압력 값을 레이블에 업데이트하는 메서드
         private void UpdatePressureValue(Label label, string value)
         {
