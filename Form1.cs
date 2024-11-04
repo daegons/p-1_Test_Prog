@@ -177,7 +177,7 @@ namespace p_1_Test_Prog
         {
             StopPortCommunication(serialPort1, ref isReading1, Timer_Com1Tx);
             StopPortCommunication(serialPort2, ref isReading2, Timer_Com2Tx);
-            Console.WriteLine("모든 PCB로부터 데이터 읽기 중지.");
+            Console.WriteLine("모든 포트로부터 데이터 읽기 중지.");
         }
 
         // 포트 통신 중지 함수: 포트를 닫고 타이머를 중지
@@ -189,10 +189,10 @@ namespace p_1_Test_Prog
         }
 
         // 포트 1의 주기적 데이터 읽기 함수
-        private void ReadPressureData1(object state) => ReadPressureData(serialPort1, isReading1, lblTxStatus1, lblRxStatus1, txtPressureValue1, "PCB 1");
+        private void ReadPressureData1(object state) => ReadPressureData(serialPort1, isReading1, lblTxStatus1, lblRxStatus1, txtPressureValue1, "차압계");
 
         // 포트 2의 주기적 데이터 읽기 함수
-        private void ReadPressureData2(object state) => ReadPressureData(serialPort2, isReading2, lblTxStatus2, lblRxStatus2, txtPressureValue2, "PCB 2");
+        private void ReadPressureData2(object state) => ReadPressureData(serialPort2, isReading2, lblTxStatus2, lblRxStatus2, txtPressureValue2, "I/O보드");
 
         // 주어진 포트에서 데이터를 읽고 수신 및 송신 상태를 업데이트
         private void ReadPressureData(SerialPort port, bool isReading, PictureBox lblTxStatus, PictureBox lblRxStatus, Label outputLabel, string pcbName)
@@ -216,8 +216,8 @@ namespace p_1_Test_Prog
                     if (!string.IsNullOrEmpty(response))
                     {
                         UpdateRxStatus(lblRxStatus, true);  // 수신 데이터가 있을 경우 초록색
-                        Debug.WriteLine($"{pcbName} mH2O: " + response);
-                        Console.WriteLine($"{pcbName} mH2O: " + response);
+                        Debug.WriteLine(response);
+                        Console.WriteLine(response);
                         UpdatePressureValue(outputLabel, ParsePressureValue(response));  // 수신 값 표시
                     }
                     else

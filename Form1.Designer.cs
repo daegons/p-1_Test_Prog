@@ -35,7 +35,6 @@
             this.lblTxStatus1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.btnExit = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -128,16 +127,6 @@
             this.label4.Size = new System.Drawing.Size(34, 21);
             this.label4.TabIndex = 8;
             this.label4.Text = "RX";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("굴림체", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label3.Location = new System.Drawing.Point(493, 150);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 16);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "차압계";
             // 
             // label5
             // 
@@ -335,7 +324,6 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblTxStatus1);
@@ -363,7 +351,6 @@
         private System.Windows.Forms.PictureBox lblTxStatus1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.StatusStrip statusStrip1;
