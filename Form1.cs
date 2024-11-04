@@ -16,7 +16,6 @@ namespace p_1_Test_Prog
         private SerialPort serialPort1, serialPort2;
         private System.Threading.Timer Timer_Com1Tx, Timer_Com2Tx;
         private bool isReading1, isReading2;  // 데이터 읽기 상태 플래그
-
         public Form1()
         {
             InitializeComponent();
@@ -25,8 +24,12 @@ namespace p_1_Test_Prog
             InitializeStatusIndicators();  // 통신 상태 표시 초기화
             LoadAvailablePorts();  // 사용 가능한 포트 목록 로드
             LoadSavedPortSettings();  // 이전에 저장된 포트 설정 로드
-        }
 
+        }
+        private void PortRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            LoadAvailablePorts();
+        }
         // 각 포트의 SerialPort 설정
         private void InitializePorts()
         {
@@ -70,9 +73,35 @@ namespace p_1_Test_Prog
         // 사용 가능한 포트를 콤보박스에 추가
         private void LoadAvailablePorts()
         {
+            comboBox_ComPort1.Items.Clear();
+            comboBox_ComPort2.Items.Clear();
+
             string[] ports = SerialPort.GetPortNames();
-            comboBox_ComPort1.Items.AddRange(ports);
-            comboBox_ComPort2.Items.AddRange(ports);
+            foreach (string port in ports)
+            {
+                try
+                {
+                    using (var testPort = new SerialPort(port))
+                    {
+                        testPort.Open();
+                        testPort.Close();
+
+                        // 실제로 열리고 닫힌 포트만 콤보박스에 추가
+                        comboBox_ComPort1.Items.Add(port);
+                        comboBox_ComPort2.Items.Add(port);
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // 다른 프로그램에서 사용 중인 포트는 스킵
+                    Console.WriteLine($"포트 {port}는 사용 중입니다.");
+                }
+                catch (Exception ex)
+                {
+                    // 포트가 사용 불가인 경우 스킵
+                    Console.WriteLine($"포트 {port}를 열 수 없습니다: {ex.Message}");
+                }
+            }
         }
 
         // 프로그램 시작 시 저장된 포트 설정을 로드
@@ -199,7 +228,7 @@ namespace p_1_Test_Prog
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{pcbName} 오류: " + ex.Message);
+                Console.WriteLine($"{pcbName} 오류: " + ex.Message);
             }
         }
         // TX 상태 업데이트 메서드
