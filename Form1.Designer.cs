@@ -65,6 +65,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnMeasure = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.lblRxStatus1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblTxStatus1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblTxStatus2)).BeginInit();
@@ -440,10 +441,21 @@
             this.btnMeasure.UseVisualStyleBackColor = true;
             this.btnMeasure.Click += new System.EventHandler(this.btnMeasure_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(314, 365);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(86, 43);
+            this.button1.TabIndex = 44;
+            this.button1.Text = "I/O_board";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(660, 460);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnMeasure);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.label16);
@@ -530,6 +542,7 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnMeasure;
+        private System.Windows.Forms.Button button1;
     }
 }
 

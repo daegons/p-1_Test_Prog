@@ -242,14 +242,13 @@ namespace p_1_Test_Prog
             }
         }
 
-        // 포트 2에서 주기적으로 데이터 읽기
+        // Port 2에서 주기적으로 데이터 읽기 (ReadPort2Data 메서드 수정)
         private void ReadPort2Data(object state)
         {
             if (serialPort2.IsOpen)
             {
                 try
                 {
-                    Thread.Sleep(100); // 데이터 전송 후 충분한 대기시간
                     int bytesToRead = serialPort2.BytesToRead;
                     if (bytesToRead > 0)
                     {
@@ -359,6 +358,15 @@ namespace p_1_Test_Prog
                 EnsurePortIsOpen(serialPort1, comboBox_ComPort1, ref isReading1, Timer_Com1Tx, 300, "Port 1");
                 EnsurePortIsOpen(serialPort2, comboBox_ComPort2, ref isReading2, Timer_Com2Tx, 500, "Port 2");
                 CalibrateOutputMode();
+            }
+            if (isButton1Pressed)
+            {
+                EnsurePortIsOpen(serialPort2, comboBox_ComPort2, ref isReading2, Timer_Com2Rx, 500, "Port 2");
+
+                // Port 2의 데이터 수신 시작
+                Timer_Com2Rx.Change(0, FCom2_RxDelay);  // Timer_Com2Rx로 데이터 주기적 수신
+
+                Console.WriteLine("btnStart 클릭: Port 2에서 데이터 수신 시작");
             }
             else
             {
@@ -604,6 +612,33 @@ namespace p_1_Test_Prog
 
         // 오차를 계산하는 메서드
         private double CalculateError(double reference, double measured) => reference - measured;
+        // Port 2 통신 활성화 플래그
+        private bool isButton1Pressed = false;
+        // button1 클릭 이벤트
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Port 2가 열려 있는지 확인하고, 열려 있지 않다면 열기 시도
+            if (!serialPort2.IsOpen)
+            {
+                try
+                {
+                    serialPort2.PortName = comboBox_ComPort2.SelectedItem?.ToString();
+                    serialPort2.Open();
+                    Console.WriteLine("Port 2가 성공적으로 열렸습니다.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Port 2를 여는 중 오류가 발생했습니다: {ex.Message}");
+                    return;
+                }
+            }
+
+            // Port 2 통신 활성화 플래그 설정
+            isButton1Pressed = true;
+            // Port 2에 레지스터 0x0200 읽기 명령 전송
+            Com2_MODBUS_Read(0x01, 0x0200, 1);
+            Console.WriteLine("button1 클릭: Port 2에 레지스터 0x0200 읽기 명령 전송");
+        }
 
         // 교정 결과를 UI에 표시하는 메서드
         private void DisplayCalibrationResult(double reference, double measured, double error, TextBox txtReference, TextBox txtMeasured, TextBox txtError)
